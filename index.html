@@ -31,7 +31,7 @@
     }
 
     html, body {
-      height: 100%;
+      min-height: 100%;
       background: var(--bg);
       display: flex;
       align-items: center;
@@ -40,8 +40,13 @@
       color: var(--text);
     }
 
+    body {
+      padding: 12px;
+    }
+
     .terminal-wrap {
-      width: min(860px, 96vw);
+      width: min(860px, 100%);
+      max-width: 100%;
       border: 1px solid var(--border);
       border-radius: 10px;
       overflow: hidden;
@@ -56,7 +61,7 @@
       gap: 8px;
       border-bottom: 1px solid var(--border);
     }
-    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
     .dot.close  { background: #ff5f57; }
     .dot.min    { background: #febc2e; }
     .dot.max    { background: #28c840; }
@@ -67,6 +72,9 @@
       color: var(--dim);
       letter-spacing: .06em;
       transform: translateX(-22px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     #output {
@@ -74,6 +82,7 @@
       min-height: 440px;
       max-height: 65vh;
       overflow-y: auto;
+      overflow-x: hidden;
       padding: 18px 22px 8px;
       font-size: 13.5px;
       line-height: 1.7;
@@ -90,6 +99,41 @@
       border-top: 1px solid var(--border);
       padding: 10px 22px 14px;
       gap: 6px;
+    }
+
+    /* --- ASCII art / decorative rules: scale with viewport instead of wrapping --- */
+    .ascii-wrap {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: pre;
+      line-height: 1.15;
+      font-size: clamp(5px, 2.15vw, 12.5px);
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    .ascii-wrap::-webkit-scrollbar { height: 4px; }
+    .ascii-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .rule-line {
+      display: block;
+      white-space: pre;
+      overflow-x: auto;
+      font-size: clamp(9px, 3.6vw, 13.5px);
+      max-width: 100%;
+    }
+    .rule-line::-webkit-scrollbar { height: 4px; }
+    .rule-line::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* --- small-screen tuning --- */
+    @media (max-width: 480px) {
+      body { padding: 6px; }
+      .terminal-wrap { border-radius: 8px; }
+      .title-bar { padding: 8px 12px; }
+      .title-text { font-size: 10.5px; transform: translateX(-18px); }
+      #output { padding: 14px 14px 6px; font-size: 12.5px; min-height: 380px; }
+      .input-row { padding: 8px 14px 12px; }
+      .prompt-static { font-size: 12.5px; }
+      #cmd-input { font-size: 12.5px; }
     }
     .prompt-static { white-space: nowrap; font-size: 13.5px; }
     .ps-user  { color: var(--prompt-user);  }
@@ -226,7 +270,7 @@ const COMMANDS = {
       h('c-purple', '  [System] Parsing configuration files... OK'),
       h('c-purple', '  [System] Accessing memory block 2021-2023 (Star Chairs & Snack orders)... OK'),
       h('', ''),
-      h('c-cyan', '  =================== CHOOSE YOUR VIBE ==================='),
+      `<pre class="rule-line c-cyan">  =================== CHOOSE YOUR VIBE ===================</pre>`,
       h('', ''),
       h('c-text', '  We are hitting up Apollo now that you\'re back from Switzerland.'),
       h('c-text', '  Pick the executable below matching the energy you want:'),
@@ -296,13 +340,17 @@ function echoPrompt(cmd) {
 }
 
 function boot() {
+  const asciiArt =
+`<span class="c-cyan">   █████╗ ██████╗  ██████╗ ██╗     ██╗      ██████╗ 
+  ██╔══██╗██╔══██╗██╔═══██╗██║     ██║     ██╔═══██╗
+  ███████║██████╔╝██║   ██║██║     ██║     ██║   ██║
+  ██╔══██║██╔═══╝ ██║   ██║██║     ██║     ██║   ██║
+  ██║  ██║██║     ╚██████╔╝███████╗███████╗╚██████╔╝</span>
+<span class="c-dim">  ╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝╚══════╝ ╚═════╝ </span>`;
+
+  appendHTML(`<pre class="ascii-wrap boot-line" style="animation-delay:.05s">${asciiArt}</pre>`);
+
   const lines = [
-    `<span class="line boot-line c-cyan" style="animation-delay:.05s">   █████╗ ██████╗  ██████╗ ██╗     ██╗      ██████╗ </span>`,
-    `<span class="line boot-line c-cyan" style="animation-delay:.10s">  ██╔══██╗██╔══██╗██╔═══██╗██║     ██║     ██╔═══██╗</span>`,
-    `<span class="line boot-line c-cyan" style="animation-delay:.15s">  ███████║██████╔╝██║   ██║██║     ██║     ██║   ██║</span>`,
-    `<span class="line boot-line c-cyan" style="animation-delay:.20s">  ██╔══██║██╔═══╝ ██║   ██║██║     ██║     ██║   ██║</span>`,
-    `<span class="line boot-line c-cyan" style="animation-delay:.25s">  ██║  ██║██║     ╚██████╔╝███████╗███████╗╚██████╔╝</span>`,
-    `<span class="line boot-line c-dim"   style="animation-delay:.30s">  ╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝╚══════╝ ╚═════╝ </span>`,
     `<span class="line boot-line" style="animation-delay:.40s"> </span>`,
     `<span class="line boot-line c-yellow" style="animation-delay:.50s">  Welcome to GregorOpmannOS (Session: Python_Alumni)</span>`,
     `<span class="line boot-line c-dim"    style="animation-delay:.60s">  Type <span class="c-green">help</span> or <span class="c-green">ls</span> to inspect system assets.</span>`,
