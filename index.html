@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Terminal — System Invitation</title>
   <link rel="icon" type="image/png" sizes="32x32" href="https://www.apollokino.ee/inc/favicon/favicon-32x32.png" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -121,6 +122,15 @@
     .c-text     { color: var(--text);   }
 
     .echo-prompt { color: var(--dim); }
+    
+    .term-link {
+      color: var(--cyan);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .term-link:hover {
+      color: var(--green);
+    }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
     .boot-line { animation: fadeIn .25s ease both; }
@@ -150,19 +160,22 @@ const inp = document.getElementById('cmd-input');
 const history = [];
 let histIdx = -1;
 let inviteExecuted = false;
+let selectedMovie = "";
+let awaitingDateTime = false;
 
 const DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1521992590478807291/jNF2b0tL8x4hc5-wfvx8UvpPrDnuf772HA3i0BSqiDKcYy6yPQGwtDQywO9EEXsS1HqM";
 
-async function sendSelectionToDiscord(movieName) {
+async function sendSelectionToDiscord(movieName, dateTimeText = "Not specified yet") {
   if (!DISCORD_WEBHOOK_URL) return;
   
   const payload = {
     embeds: [{
-      title: "🎬 Apollo Movie Selection Locked In!",
+      title: "🎬 Apollo Movie Target Acquired!",
       color: movieName === "Toy Story 5" ? 65423 : 16731494,
       fields: [
         { name: "Selected Vibe", value: `\`${movieName}\``, inline: true },
-        { name: "Status", value: "Ready for Star Chairs 🍿", inline: true }
+        { name: "Proposed Time", value: `\`${dateTimeText}\``, inline: true },
+        { name: "Status", value: "Ready for Star Chairs 🍿", inline: false }
       ],
       timestamp: new Date().toISOString()
     }]
@@ -181,6 +194,7 @@ async function sendSelectionToDiscord(movieName) {
 
 const COMMANDS = {
   help() {
+    if (awaitingDateTime) return [h('c-yellow', '  [System] Enter a preferred date and time to finish scheduling.')];
     return [
       h('', ''),
       h('c-cyan', '  Available system commands:'),
@@ -194,6 +208,7 @@ const COMMANDS = {
   },
 
   ls() {
+    if (awaitingDateTime) return [h('c-yellow', '  [System] Enter a preferred date and time to finish scheduling.')];
     return [
       h('', ''),
       h('c-green', '  invite.sh*'),
@@ -204,6 +219,7 @@ const COMMANDS = {
   clear() { out.innerHTML = ''; return []; },
 
   './invite.sh'(args) {
+    if (awaitingDateTime) return [h('c-yellow', '  [System] Enter a preferred date and time to finish scheduling.')];
     inviteExecuted = true;
     return [
       h('', ''),
@@ -226,13 +242,15 @@ const COMMANDS = {
 
   './toystory5'() {
     if (!inviteExecuted) return [h('c-red', '  bash: ./toystory5: target initialization required first.')];
-    sendSelectionToDiscord("Toy Story 5");
+    selectedMovie = "Toy Story 5";
+    awaitingDateTime = true;
     return [
       h('', ''),
       h('c-yellow', '  [Selection Saved] -> Toy Story 5'),
       h('c-text', '  Excellent choice. Childhood nostalgia route secured.'),
-      h('c-text', '  Pacing strategy recommended: Choose a reasonable sized drink.'),
-      h('c-dim', '  Transmission sent! Coordination protocols initialized.'),
+      h('c-text', '  Check out the showtimes here: <a class="term-link" href="https://www.apollokino.ee/event/6164/lelulugu_5?theatreAreaID=1004" target="_blank">Apollo Toy Story 5 Event</a>'),
+      h('', ''),
+      h('c-cyan', '  [Prompt] Please type your preferred date and time (e.g., "Friday at 19:00"):'),
       h('', '')
     ];
   },
@@ -241,13 +259,16 @@ const COMMANDS = {
 
   './jackass'() {
     if (!inviteExecuted) return [h('c-red', '  bash: ./jackass: target initialization required first.')];
-    sendSelectionToDiscord("Jackass");
+    selectedMovie = "Jackass";
+    awaitingDateTime = true;
     return [
       h('', ''),
       h('c-red', '  [Selection Saved] -> Jackass'),
       h('c-text', '  Absolute brainrot route initialized.'),
       h('c-text', '  Emergency notice: Guard duty protocols for mall bushes have been updated.'),
-      h('c-dim', '  Transmission sent! Coordination protocols initialized.'),
+      h('c-text', '  Check out the showtimes here: <a class="term-link" href="https://www.apollokino.ee/event/6700/jackass_viimane_ja_parim?theatreAreaID=1004" target="_blank">Apollo Jackass Event</a>'),
+      h('', ''),
+      h('c-cyan', '  [Prompt] Please type your preferred date and time (e.g., "Saturday at 21:30"):'),
       h('', '')
     ];
   },
@@ -299,6 +320,19 @@ inp.addEventListener('keydown', e => {
     history.unshift(raw);
     echoPrompt(raw);
     
+    if (awaitingDateTime) {
+      awaitingDateTime = false;
+      sendSelectionToDiscord(selectedMovie, raw);
+      appendLines([
+        h('', ''),
+        h('c-green', `  [Success] Schedule captured: "${raw}"`),
+        h('c-text', '  Transmission sent successfully over network relays.'),
+        h('c-dim', '  Coordination parameters complete. System standing down.'),
+        h('', '')
+      ]);
+      return;
+    }
+
     const parts = raw.split(/\s+/);
     const cmd = parts[0].toLowerCase();
     const args = parts.slice(1);
@@ -323,6 +357,7 @@ inp.addEventListener('keydown', e => {
     else { histIdx = -1; inp.value = ''; }
   } else if (e.key === 'Tab') {
     e.preventDefault();
+    if (awaitingDateTime) return;
     const partial = inp.value.toLowerCase();
     const match = Object.keys(COMMANDS).find(c => c.startsWith(partial));
     if (match) inp.value = match;
