@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Apollo Cinema — Terminal Invitation</title>
   <link rel="icon" type="image/png" sizes="32x32" href="https://www.apollokino.ee/inc/favicon/favicon-32x32.png" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet"/>
@@ -31,7 +31,7 @@
     }
 
     html, body {
-      min-height: 100%;
+      min-height: 100dvh;
       background: var(--bg);
       display: flex;
       align-items: center;
@@ -42,6 +42,7 @@
 
     body {
       padding: 12px;
+      width: 100%;
     }
 
     .terminal-wrap {
@@ -51,6 +52,8 @@
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 0 60px rgba(57,255,143,.07), 0 24px 80px rgba(0,0,0,.7);
+      display: flex;
+      flex-direction: column;
     }
 
     .title-bar {
@@ -80,7 +83,7 @@
     #output {
       background: var(--surface);
       min-height: 440px;
-      max-height: 65vh;
+      max-height: 60vh;
       overflow-y: auto;
       overflow-x: hidden;
       padding: 18px 22px 8px;
@@ -101,41 +104,38 @@
       gap: 6px;
     }
 
-    /* --- ASCII art / decorative rules: scale with viewport instead of wrapping --- */
     .ascii-wrap {
       display: block;
       font-family: 'JetBrains Mono', monospace;
       white-space: pre;
-      line-height: 1.15;
-      font-size: clamp(5px, 2.15vw, 12.5px);
+      line-height: 1.2;
+      font-size: clamp(6px, 2.3vw, 13px);
       overflow-x: auto;
       max-width: 100%;
+      margin-bottom: 10px;
     }
-    .ascii-wrap::-webkit-scrollbar { height: 4px; }
-    .ascii-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .ascii-wrap::-webkit-scrollbar { height: 0px; display: none; }
 
     .rule-line {
       display: block;
-      white-space: pre;
-      overflow-x: auto;
-      font-size: clamp(9px, 3.6vw, 13.5px);
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-size: clamp(10px, 3.5vw, 13.5px);
       max-width: 100%;
     }
-    .rule-line::-webkit-scrollbar { height: 4px; }
-    .rule-line::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-    /* --- small-screen tuning --- */
     @media (max-width: 480px) {
-      body { padding: 6px; }
+      body { padding: 8px; }
       .terminal-wrap { border-radius: 8px; }
       .title-bar { padding: 8px 12px; }
-      .title-text { font-size: 10.5px; transform: translateX(-18px); }
-      #output { padding: 14px 14px 6px; font-size: 12.5px; min-height: 380px; }
-      .input-row { padding: 8px 14px 12px; }
+      .title-text { font-size: 11px; transform: translateX(-18px); }
+      #output { padding: 14px 16px 6px; font-size: 12.5px; min-height: 400px; max-height: 55vh; }
+      .input-row { padding: 10px 16px 14px; }
       .prompt-static { font-size: 12.5px; }
       #cmd-input { font-size: 12.5px; }
     }
-    .prompt-static { white-space: nowrap; font-size: 13.5px; }
+
+    .prompt-static { white-space: nowrap; font-size: 13.5px; flex-shrink: 0; }
     .ps-user  { color: var(--prompt-user);  }
     .ps-at    { color: var(--dim);          }
     .ps-host  { color: var(--prompt-host);  }
@@ -152,6 +152,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 13.5px;
       caret-color: var(--green);
+      min-width: 50px;
     }
 
     .line       { display: block; white-space: pre-wrap; word-break: break-word; }
@@ -171,6 +172,7 @@
       color: var(--cyan);
       text-decoration: underline;
       cursor: pointer;
+      word-break: break-all;
     }
     .term-link:hover {
       color: var(--green);
@@ -213,7 +215,7 @@ async function sendSelectionToDiscord(movieName, dateTimeText = "Not specified y
   if (!DISCORD_WEBHOOK_URL) return;
   
   const payload = {
-    content: "🎬 Hey <@1288118096036364329>, movie target acquired!", // Correctly tags you and sends a notification
+    content: "🎬 Hey <@1288118096036364329>, movie target acquired!",
     embeds: [{
       title: "Movie Target Acquired!",
       color: movieName === "Toy Story 5" ? 65423 : 16731494,
@@ -271,7 +273,7 @@ const COMMANDS = {
       h('c-purple', '  [System] Parsing configuration files... OK'),
       h('c-purple', '  [System] Accessing memory block 2021-2023 (Star Chairs & Snack orders)... OK'),
       h('', ''),
-      `<pre class="rule-line c-cyan">  =================== CHOOSE YOUR VIBE ===================</pre>`,
+      `<span class="line rule-line c-cyan">=================== CHOOSE YOUR VIBE ===================</span>`,
       h('', ''),
       h('c-text', '  We are hitting up Apollo now that you\'re back from Switzerland.'),
       h('c-text', '  Pick the executable below matching the energy you want:'),
@@ -337,7 +339,7 @@ function appendLines(lines) {
 }
 
 function echoPrompt(cmd) {
-  appendHTML(`<span class="line echo-prompt"><span style="color:var(--green)">guest</span><span style="color:var(--dim)">@</span><span style="color:var(--cyan)">gregoropmann-os</span><span style="color:var(--dim)">:</span><span style="color:var(--purple)">~</span><span style="color:var(--green)">$</span> <span style="color:var(--text)">${cmd}</span></span>`);
+  appendHTML(`<span class="line echo-prompt"><span style="color:var(--green)">guest</span><span style="color:var(--dim)">@</span><span style="color:var(--cyan)">Apollo</span><span style="color:var(--dim)">:</span><span style="color:var(--purple)">~</span><span style="color:var(--green)">$</span> <span style="color:var(--text)">${cmd}</span></span>`);
 }
 
 function boot() {
