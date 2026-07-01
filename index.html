@@ -133,12 +133,12 @@
     <div class="dot close"></div>
     <div class="dot min"></div>
     <div class="dot max"></div>
-    <span class="title-text">guest@gregoropmann-os — bash</span>
+    <span class="title-text">guest@Apollo</span>
   </div>
   <div id="output"></div>
   <div class="input-row">
     <span class="prompt-static">
-      <span class="ps-user">guest</span><span class="ps-at">@</span><span class="ps-host">gregoropmann-os</span><span class="ps-colon">:</span><span class="ps-path">~</span><span class="ps-dollar">$</span>
+      <span class="ps-user">guest</span><span class="ps-at">@</span><span class="ps-host">Apollo</span><span class="ps-colon">:</span><span class="ps-path">~</span><span class="ps-dollar">$</span>
     </span>
     <input id="cmd-input" type="text" autocomplete="off" spellcheck="false" autofocus/>
   </div>
@@ -150,6 +150,34 @@ const inp = document.getElementById('cmd-input');
 const history = [];
 let histIdx = -1;
 let inviteExecuted = false;
+
+const DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1521992590478807291/jNF2b0tL8x4hc5-wfvx8UvpPrDnuf772HA3i0BSqiDKcYy6yPQGwtDQywO9EEXsS1HqM";
+
+async function sendSelectionToDiscord(movieName) {
+  if (!DISCORD_WEBHOOK_URL) return;
+  
+  const payload = {
+    embeds: [{
+      title: "🎬 Apollo Movie Selection Locked In!",
+      color: movieName === "Toy Story 5" ? 65423 : 16731494,
+      fields: [
+        { name: "Selected Vibe", value: `\`${movieName}\``, inline: true },
+        { name: "Status", value: "Ready for Star Chairs 🍿", inline: true }
+      ],
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  try {
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.error("Webhook submission failed:", err);
+  }
+}
 
 const COMMANDS = {
   help() {
@@ -193,18 +221,18 @@ const COMMANDS = {
     ];
   },
 
-  // Fallbacks to capture loose commands
   invite() { return COMMANDS['./invite.sh'](); },
   './invite'() { return COMMANDS['./invite.sh'](); },
 
   './toystory5'() {
     if (!inviteExecuted) return [h('c-red', '  bash: ./toystory5: target initialization required first.')];
+    sendSelectionToDiscord("Toy Story 5");
     return [
       h('', ''),
       h('c-yellow', '  [Selection Saved] -> Toy Story 5'),
       h('c-text', '  Excellent choice. Childhood nostalgia route secured.'),
-      h('c-text', '  Pacing strategy recommended: Choose a reasonable sized drink.'),
-      h('c-dim', '  Send a screenshot of this terminal to locking in the scheduling!'),
+      h('c-text', '  Pacing strategy recommended: Choose a reasonably sized drink.'),
+      h('c-dim', '  Transmission sent! Coordination protocols initialized.'),
       h('', '')
     ];
   },
@@ -213,12 +241,13 @@ const COMMANDS = {
 
   './jackass'() {
     if (!inviteExecuted) return [h('c-red', '  bash: ./jackass: target initialization required first.')];
+    sendSelectionToDiscord("Jackass");
     return [
       h('', ''),
       h('c-red', '  [Selection Saved] -> Jackass'),
-      h('c-text', '  Absolute absolute brainrot route initialized.'),
-      h('c-text', '  Emergency notice: Guard duty protocols for mall bushes have been updated.'),
-      h('c-dim', '  Send a screenshot of this terminal to locking in the scheduling!'),
+      h('c-text', '  Absolute brainrot route initialized.'),
+      h('c-text', '  Emergency notice: Guard duty protocols for bushes have been updated.'),
+      h('c-dim', '  Transmission sent! Coordination protocols initialized.'),
       h('', '')
     ];
   },
@@ -254,7 +283,7 @@ function boot() {
     `<span class="line boot-line c-cyan" style="animation-delay:.25s">  ██║  ██║██║     ╚██████╔╝███████╗███████╗╚██████╔╝</span>`,
     `<span class="line boot-line c-dim"   style="animation-delay:.30s">  ╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝╚══════╝ ╚═════╝ </span>`,
     `<span class="line boot-line" style="animation-delay:.40s"> </span>`,
-    `<span class="line boot-line c-yellow" style="animation-delay:.50s">  Welcome to GregorOpmannOS (Session: Python_Alumni)</span>`,
+    `<span class="line boot-line c-yellow" style="animation-delay:.50s">  Welcome to the invitation (Session: Python_Alumni)</span>`,
     `<span class="line boot-line c-dim"    style="animation-delay:.60s">  Type <span class="c-green">help</span> or <span class="c-green">ls</span> to inspect system assets.</span>`,
     `<span class="line boot-line" style="animation-delay:.65s"> </span>`,
   ];
