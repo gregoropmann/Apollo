@@ -187,12 +187,12 @@
     <div class="dot close"></div>
     <div class="dot min"></div>
     <div class="dot max"></div>
-    <span class="title-text">guest@gregoropmann-os — bash</span>
+    <span class="title-text">guest@Apollo</span>
   </div>
   <div id="output"></div>
   <div class="input-row">
     <span class="prompt-static">
-      <span class="ps-user">guest</span><span class="ps-at">@</span><span class="ps-host">gregoropmann-os</span><span class="ps-colon">:</span><span class="ps-path">~</span><span class="ps-dollar">$</span>
+      <span class="ps-user">guest</span><span class="ps-at">@</span><span class="ps-host">Apollo</span><span class="ps-colon">:</span><span class="ps-path">~</span><span class="ps-dollar">$</span>
     </span>
     <input id="cmd-input" type="text" autocomplete="off" spellcheck="false" autofocus/>
   </div>
@@ -214,7 +214,7 @@ async function sendSelectionToDiscord(movieName, dateTimeText = "Not specified y
   
   const payload = {
     embeds: [{
-      title: "🎬 Apollo Movie Target Acquired!",
+      title: "@Apollo 🎬 Movie Target Acquired!",
       color: movieName === "Toy Story 5" ? 65423 : 16731494,
       fields: [
         { name: "Selected Vibe", value: `\`${movieName}\``, inline: true },
