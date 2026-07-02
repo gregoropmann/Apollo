@@ -10,23 +10,31 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0d0f14;
-      --surface:   #13161e;
-      --border:    #1e2330;
-      --green:     #39ff8f;
-      --cyan:      #00e5ff;
-      --yellow:    #ffd93d;
-      --red:       #ff4d6d;
-      --purple:    #b48eff;
-      --dim:       #4a5068;
-      --text:      #c8cfe8;
-      --prompt-user:  #39ff8f;
-      --prompt-host:  #00e5ff;
-      --prompt-path:  #b48eff;
+      --bg:           #08080a;
+      --surface:      #111115;
+      --border:       #2c1a10;
+      --green:        #ff79c6; /* Kept variable name to avoid refactoring JS, but changed map to vivid neon orange/accents */
+      --cyan:         #ffb86c; 
+      --yellow:       #ff922b;
+      --red:          #fa5252;
+      --purple:       #e8590c;
+      --dim:          #6e5643;
+      --text:         #ffe8cc;
+      --prompt-user:  #ff922b;
+      --prompt-host:  #fd7e14;
+      --prompt-path:  #e8590c;
+    }
+
+    /* Mapping system color overrides to strict orange palette */
+    :root {
+      --green:        #ff922b; /* Bright Orange */
+      --cyan:         #ffa94d; /* Soft Orange */
+      --yellow:       #ffe0b2; /* Light Cream Orange */
+      --purple:       #d9480f; /* Deep Dark Orange */
     }
 
     ::selection {
-      background: rgba(0, 229, 255, 0.2);
+      background: rgba(247, 103, 7, 0.25);
       color: var(--green);
     }
 
@@ -51,13 +59,13 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 0 60px rgba(57,255,143,.07), 0 24px 80px rgba(0,0,0,.7);
+      box-shadow: 0 0 60px rgba(232,89,12,.08), 0 24px 80px rgba(0,0,0,.85);
       display: flex;
       flex-direction: column;
     }
 
     .title-bar {
-      background: #0a0c11;
+      background: #050507;
       padding: 10px 16px;
       display: flex;
       align-items: center;
@@ -219,7 +227,7 @@ async function sendSelectionToDiscord(movieName, dateTimeText = "Not specified y
     content: "🎬 Hey <@1288118096036364329>, movie target acquired!",
     embeds: [{
       title: "Movie Target Acquired!",
-      color: movieName === "Toy Story 5" ? 65423 : (movieName === "Jackass" ? 16731494 : 11832319),
+      color: movieName === "Toy Story 5" ? 16621611 : (movieName === "Jackass" ? 15286543 : 14239759),
       fields: [
         { name: "Selected Vibe", value: `\`${movieName}\``, inline: true },
         { name: "Proposed Time", value: `\`${dateTimeText}\``, inline: true },
