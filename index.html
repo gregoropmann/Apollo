@@ -13,7 +13,7 @@
       --bg:           #08080a;
       --surface:      #111115;
       --border:       #2c1a10;
-      --green:        #ff79c6; /* Kept variable name to avoid refactoring JS, but changed map to vivid neon orange/accents */
+      --green:        #ff79c6;
       --cyan:         #ffb86c; 
       --yellow:       #ff922b;
       --red:          #fa5252;
@@ -25,12 +25,11 @@
       --prompt-path:  #e8590c;
     }
 
-    /* Mapping system color overrides to strict orange palette */
     :root {
-      --green:        #ff922b; /* Bright Orange */
-      --cyan:         #ffa94d; /* Soft Orange */
-      --yellow:       #ffe0b2; /* Light Cream Orange */
-      --purple:       #d9480f; /* Deep Dark Orange */
+      --green:        #ff922b;
+      --cyan:         #ffa94d;
+      --yellow:       #ffe0b2;
+      --purple:       #d9480f;
     }
 
     ::selection {
@@ -396,7 +395,6 @@ inp.addEventListener('keydown', e => {
     history.unshift(raw);
     echoPrompt(raw);
     
-    // Check for explicit exit or rejection phrases
     const lowerRaw = raw.toLowerCase();
     if (lowerRaw === 'no' || lowerRaw === 'exit' || lowerRaw === 'quit' || lowerRaw === 'reject') {
       appendLines([
